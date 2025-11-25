@@ -1,0 +1,30 @@
+{
+  "name": "ootd-app",
+  "version": "1.0.0",
+  "description": "This is the scaffolding for the **Outfit of the Day (OOTD)** web application.   The app helps users generate outfit suggestions based on their wardrobe, weather, and events.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+  "dev": "node api/index.js"
+},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gguerrero8/ootd-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/gguerrero8/ootd-app/issues"
+  },
+  "homepage": "https://github.com/gguerrero8/ootd-app#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.84.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0"
+  }
+}

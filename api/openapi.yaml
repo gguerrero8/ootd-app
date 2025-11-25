@@ -1,0 +1,424 @@
+openapi: 3.0.0
+info:
+  title: OOTD API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3001
+
+paths:
+
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+
+  /clothing:
+    get:
+      summary: Get all clothing items
+      responses:
+        "200":
+          description: Success
+    post:
+      summary: Create a clothing item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                category:
+                  type: string
+                color:
+                  type: string
+                brand:
+                  type: string
+                image_url:
+                  type: string
+      responses:
+        "201":
+          description: Created
+
+  /clothing/{id}:
+    get:
+      summary: Get a clothing item by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Success
+
+    put:
+      summary: Update a clothing item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Updated
+
+    delete:
+      summary: Delete a clothing item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+
+  /outfits:
+    get:
+      summary: Get all outfits
+      responses:
+        "200":
+          description: Success
+
+    post:
+      summary: Create an outfit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                name:
+                  type: string
+                season:
+                  type: string
+      responses:
+        "201":
+          description: Created
+
+  /outfits/{id}:
+    get:
+      summary: Get an outfit by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Success
+
+    put:
+      summary: Update an outfit
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+      responses:
+        "200":
+          description: Updated
+
+    delete:
+      summary: Delete an outfit
+      parameters:
+        - name: id
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Deleted
+
+  /tags:
+    get:
+      summary: Get all tags
+      responses:
+        "200":
+          description: Success
+
+    post:
+      summary: Create a tag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        "201":
+          description: Created
+
+  /collections:
+    get:
+      summary: Get all collections
+      responses:
+        "200":
+          description: Success
+
+    post:
+      summary: Create a collection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                name:
+                  type: string
+      responses:
+        "201":
+          description: Created
+
+  /posts:
+    get:
+      summary: Get all posts
+      responses:
+        "200":
+          description: Success
+
+    post:
+      summary: Create a post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                outfit_id:
+                  type: integer
+                caption:
+                  type: string
+      responses:
+        "201":
+          description: Created
+// =============================
+// CLOTHING ROUTES
+// =============================
+
+// GET all clothing items
+app.get("/clothing", async (req, res) => {
+  const { data, error } = await supabase
+    .from("clothing_items")
+    .select("*");
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+// CREATE clothing item
+app.post("/clothing", async (req, res) => {
+  const { user_id, category, color, brand, image_url } = req.body;
+
+  const { data, error } = await supabase
+    .from("clothing_items")
+    .insert([{ user_id, category, color, brand, image_url }])
+    .select();
+
+  if (error) return res.status(400).json({ error: error.message });
+  res.status(201).json(data[0]);
+});
+
+// GET clothing item by ID
+app.get("/clothing/:id", async (req, res) => {
+  const id = req.params.id;
+
+  const { data, error } = await supabase
+    .from("clothing_items")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) return res.status(404).json({ error: "Item not found" });
+  res.json(data);
+});
+
+// UPDATE clothing item
+app.put("/clothing/:id", async (req, res) => {
+  const id = req.params.id;
+  const updates = req.body;
+
+  const { data, error } = await supabase
+    .from("clothing_items")
+    .update(updates)
+    .eq("id", id)
+    .select();
+
+  if (error) return res.status(400).json({ error: error.message });
+  res.json(data[0]);
+});
+
+// DELETE clothing item
+app.delete("/clothing/:id", async (req, res) => {
+  const id = req.params.id;
+
+  const { error } = await supabase
+    .from("clothing_items")
+    .delete()
+    .eq("id", id);
+
+  if (error) return res.status(400).json({ error: error.message });
+  res.json({ success: true });
+});
+// =============================
+// OUTFIT ROUTES
+// =============================
+
+// GET all outfits
+app.get("/outfits", async (req, res) => {
+  const { data, error } = await supabase.from("outfits").select("*");
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+// CREATE outfit
+app.post("/outfits", async (req, res) => {
+  const { user_id, name, season } = req.body;
+
+  const { data, error } = await supabase
+    .from("outfits")
+    .insert([{ user_id, name, season }])
+    .select();
+
+  if (error) return res.status(400).json({ error: error.message });
+  res.status(201).json(data[0]);
+});
+
+// GET outfit by ID
+app.get("/outfits/:id", async (req, res) => {
+  const id = req.params.id;
+
+  const { data, error } = await supabase
+    .from("outfits")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) return res.status(404).json({ error: "Outfit not found" });
+  res.json(data);
+});
+
+// UPDATE outfit
+app.put("/outfits/:id", async (req, res) => {
+  const id = req.params.id;
+  const updates = req.body;
+
+  const { data, error } = await supabase
+    .from("outfits")
+    .update(updates)
+    .eq("id", id)
+    .select();
+
+  if (error) return res.status(400).json({ error: error.message });
+  res.json(data[0]);
+});
+
+// DELETE outfit
+app.delete("/outfits/:id", async (req, res) => {
+  const id = req.params.id;
+
+  const { error } = await supabase.from("outfits").delete().eq("id", id);
+
+  if (error) return res.status(400).json({ error: error.message });
+  res.json({ success: true });
+});
+// =============================
+// TAG ROUTES
+// =============================
+
+// GET all tags
+app.get("/tags", async (req, res) => {
+  const { data, error } = await supabase.from("tags").select("*");
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+// CREATE tag
+app.post("/tags", async (req, res) => {
+  const { name } = req.body;
+
+  const { data, error } = await supabase
+    .from("tags")
+    .insert([{ name }])
+    .select();
+
+  if (error) return res.status(400).json({ error: error.message });
+
+  res.status(201).json(data[0]);
+});
+// =============================
+// COLLECTION ROUTES
+// =============================
+
+// GET all collections
+app.get("/collections", async (req, res) => {
+  const { data, error } = await supabase.from("collections").select("*");
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+// CREATE collection
+app.post("/collections", async (req, res) => {
+  const { user_id, name } = req.body;
+
+  const { data, error } = await supabase
+    .from("collections")
+    .insert([{ user_id, name }])
+    .select();
+
+  if (error) return res.status(400).json({ error: error.message });
+  res.status(201).json(data[0]);
+});
+// =============================
+// POST ROUTES
+// =============================
+
+// GET all posts
+app.get("/posts", async (req, res) => {
+  const { data, error } = await supabase.from("posts").select("*");
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+// CREATE post
+app.post("/posts", async (req, res) => {
+  const { user_id, outfit_id, caption } = req.body;
+
+  const { data, error } = await supabase
+    .from("posts")
+    .insert([{ user_id, outfit_id, caption }])
+    .select();
+
+  if (error) return res.status(400).json({ error: error.message });
+
+  res.status(201).json(data[0]);
+});
