@@ -5,7 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 
 dotenv.config();
 
-const app = express();
+export const app = express();
 app.use(cors());
 app.use(express.json());
 
@@ -263,8 +263,10 @@ app.post("/posts", async (req, res) => {
   res.status(201).json(data[0]);
 });
 
-// --- START SERVER ---
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`API server running on port ${PORT}`);
-});
+// --- START SERVER (local dev only) ---
+if (!process.env.LAMBDA_TASK_ROOT) {
+  const PORT = process.env.PORT || 3001;
+  app.listen(PORT, () => {
+    console.log(`API server running on port ${PORT}`);
+  });
+}

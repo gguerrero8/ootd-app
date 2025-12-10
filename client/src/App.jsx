@@ -1,11 +1,14 @@
-import { Routes, Route, Navigate, Link } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import './App.css'
 import LoginPage from './pages/LoginPage.jsx'
 import HomePage from './pages/HomePage.jsx'
 import ClosetPage from './pages/ClosetPage.jsx'
 import OutfitsPage from './pages/OutfitsPage.jsx'
 import CollectionsPage from './pages/CollectionsPage.jsx'
+import CollectionDetailPage from './pages/CollectionDetailPage.jsx'
 import FeedPage from './pages/FeedPage.jsx'
+import CommunityPage from './pages/CommunityPage.jsx'
+import MainLayout from './components/MainLayout.jsx'
 
 function getStoredUser() {
   try {
@@ -27,56 +30,101 @@ function ProtectedRoute({ children }) {
 function App() {
   return (
     <div className="app-root">
-      <header className="app-header">
-        <Link to="/home" className="app-title">OOTD</Link>
-      </header>
-      <main className="app-main">
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/home"
-            element={
-              <ProtectedRoute>
+      <Routes>
+        {/* Public */}
+        <Route
+          path="/login"
+          element={
+            <div className="auth-root">
+              <LoginPage />
+            </div>
+          }
+        />
+
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
                 <HomePage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/closet"
-            element={
-              <ProtectedRoute>
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <HomePage />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/closet"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
                 <ClosetPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/outfits"
-            element={
-              <ProtectedRoute>
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/outfits"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
                 <OutfitsPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/collections"
-            element={
-              <ProtectedRoute>
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/collections"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
                 <CollectionsPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/feed"
-            element={
-              <ProtectedRoute>
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/collections/:collectionId"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <CollectionDetailPage />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/feed"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
                 <FeedPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </main>
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/community"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <CommunityPage />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
     </div>
   )
 }

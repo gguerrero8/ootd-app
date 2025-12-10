@@ -1,0 +1,27 @@
+service: ootd-api
+
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-west-2
+  stage: dev
+  environment:
+    NODE_ENV: production
+    # Supabase secrets will normally come from AWS Secrets Manager via lambda.js
+
+functions:
+  api:
+    handler: lambda.handler
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: ANY
+
+plugins:
+  - serverless-offline
+
+package:
+  patterns:
+    - '!node_modules/.cache/**'
